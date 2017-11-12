@@ -1,10 +1,17 @@
-# matrix multiplication with cpp
-#####################################################################################################
-#####################################################################################################
-# using gurobi packages
-dyn.load("~/beomfile/gsmo/libqp_gsmo_r.so")
-source("~/beomfile/Rscript/shrinkage.R")
+# I have confirmed that this code works well under Linux and Windows
+# Modified date : 2017/11/12
 
+# This algorithm uses gsmo algorithm
+
+# If using gsmo algorithm, you should compile gsmo algorithm written c code
+
+# Under Linux
+# dyn.load("./gsmo/libqp_gsmo_r.so")
+
+# Under Windows
+dyn.load("./gsmo/libqp_gsmo_r.dll")
+
+source("./shrinkage.R")
 
 fastADMM_gsmo = function(X, y, p, q, C, tau, max_iter, inner_iter, eps, rho, eta) {
   if (class(X) != "matrix") {X = as.matrix(X)}
