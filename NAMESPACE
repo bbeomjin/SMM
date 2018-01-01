@@ -1,0 +1,15 @@
+# Import required packages
+# none so far
+
+# Load dynamic libraries (shared object files)
+useDynLib(SMM)
+
+# Export functions defined in R code
+import(stats)
+export(shrinkage)
+export(smm_core)
+export(smm.default)
+export(smm.formula)
+export(predict.smm)
+export(smm)
+export(gsmo)

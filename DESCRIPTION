@@ -1,0 +1,8 @@
+Package: SMM
+Version: 1.0
+Title: Support Matrix Machine and General Sequential Minimal Optimization Algorithm
+Description: Functions for Support Matrix Machine, General sequential minimal optimization algorithm for quadratic programming
+License: GPL-2
+NeedsCompilation: yes
+Author: Park Beomjin
+Maintainer: Park Beomjin <bj_kkam@naver.com>

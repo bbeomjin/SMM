@@ -1,0 +1,6 @@
+# -*- Makefile -*-
+# vim:ft=make:
+
+OBJECTS = libqp_gsmo_r.o $(SOURCES:.c=.o)
+
+SOURCES = libqp_gsmo.c
