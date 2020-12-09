@@ -156,8 +156,8 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
                           smm_fit = smm.default(X = x_fold, y = y_fold, p, q, C = params$cost[j], tau = params$tau[j],
                                                 ...)
                           pred_val = predict.smm(smm_fit, newdata = x_valid)
-                          acc = sum(y_valid == pred_val) / length(y_valid)
-                          return(acc)
+                          err = 1 - sum(y_valid == pred_val) / length(y_valid)
+                          return(err)
                         }, mc.cores = ncores)
     
     valid_err_mat[i, ] = sapply(fold_err, "[[", 1)
