@@ -136,7 +136,7 @@ predict.smm = function(object, newdata = NULL, type = "class", ncores = 1, ...)
   return(res)
 }
 
-kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, ...)
+kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, ncores = 1, ...)
 {
   params = expand.grid(cost = cost_range, tau = tau_range)
   
