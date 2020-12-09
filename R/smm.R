@@ -141,7 +141,7 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
   params = expand.grid(cost = cost_range, tau = tau_range)
   
   fold_list = createFolds(y, k = nfolds, list = FALSE)
-  valid_err_mat = matrix(NA, nrow = ncolds, ncol = ncol(params))
+  valid_err_mat = matrix(NA, nrow = nfolds, ncol = ncol(params))
   
   for (i in 1:nfolds) {
     cat(nfolds, "- fold CV :", i / nfolds * 100, "%", "\r")
@@ -153,7 +153,7 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
     
     fold_err = mclapply(1:nrow(params),
                         function(j) {
-                          smm_fit = smm.default(x = x_fold, y = y_fold, p, q, C = params$cost[j], tau = params$tau[j],
+                          smm_fit = smm.default(X = x_fold, y = y_fold, p, q, C = params$cost[j], tau = params$tau[j],
                                                 ...)
                           pred_val = predict.smm(smm_fit, newdata = x_valid)
                           acc = sum(y_valid == pred_val) / length(y_valid)
@@ -174,7 +174,7 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
   out$valid_err = valid_err
   
   if (optModel) {
-    opt_model = smm.default(x = x, y = y, p, q, C = opt_param$cost, tau = opt_param$tau, ...)
+    opt_model = smm.default(X = x, y = y, p, q, C = opt_param$cost, tau = opt_param$tau, ...)
     out$opt_model = opt_model
   }
   return(out)
