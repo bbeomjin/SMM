@@ -4,6 +4,9 @@
 # Load dynamic libraries (shared object files)
 useDynLib(SMM)
 
+import("caret")
+import("parallel")
+
 # Export functions defined in R code
 import(stats)
 export(shrinkage)

@@ -90,7 +90,7 @@ shrinkage = function(X, tau)
 
 smm = function(X, ...) {UseMethod("smm")}
 
-smm.default = function(X, y, p, q, C, tau, max_iter, inner_iter, eps, rho, eta, ...) 
+smm.default = function(X, y, p, q, C, tau, max_iter = 1e+4, inner_iter = 1e+5, eps = 1e-6, rho = 20, eta = 0.999, ...) 
 {
   X = as.matrix(X)
   y = as.numeric(y)
@@ -106,7 +106,7 @@ smm.default = function(X, y, p, q, C, tau, max_iter, inner_iter, eps, rho, eta, 
   return(smm_sol)
 }
 
-smm.formula = function(formula, data = list(), p, q, C, tau, max_iter, inner_iter, eps, rho, eta, ...) 
+smm.formula = function(formula, data = list(), p, q, C, tau, max_iter = 1e+4, inner_iter = 1e+5, eps = 1e-6, rho = 20, eta = 0.999, ...) 
 {
   mf = model.frame(formula = formula, data = data)
   X = as.matrix(mf[, -1])
@@ -122,7 +122,7 @@ smm.formula = function(formula, data = list(), p, q, C, tau, max_iter, inner_ite
   return(smm_sol)
 }
 
-predict.smm = function(object, newdata = NULL, type = "class", ...)
+predict.smm = function(object, newdata = NULL, type = "class", ncores = 1, ...)
 {
   if(is.null(newdata)) {
     y = fitted(object)
@@ -136,3 +136,46 @@ predict.smm = function(object, newdata = NULL, type = "class", ...)
   return(res)
 }
 
+kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, ...)
+{
+  params = expand.grid(cost = cost_range, tau = tau_range)
+  
+  fold_list = createFolds(y, k = nfolds, list = FALSE)
+  valid_err_mat = matrix(NA, nrow = ncolds, ncol = ncol(params))
+  
+  for (i in 1:nfolds) {
+    cat(nfolds, "- fold CV :", i / nfolds * 100, "%", "\r")
+    fold = which(fold_list == i)
+    y_fold = y[-fold]
+    x_fold = x[-fold, , drop = FALSE]
+    y_valid = y[fold]
+    x_valid = x[fold, , drop = FALSE]
+    
+    fold_err = mclapply(1:nrow(params),
+                        function(j) {
+                          smm_fit = smm.default(x = x_fold, y = y_fold, p, q, C = params$cost[j], tau = params$tau[j],
+                                                ...)
+                          pred_val = predict.smm(smm_fit, newdata = x_valid)
+                          acc = sum(y_valid == pred_val) / length(y_valid)
+                          return(acc)
+                        }, mc.cores = ncores)
+    
+    valid_err_mat[i, ] = sapply(fold_err, "[[", 1)
+  }
+  valid_err = colMeans(valid_err_mat, na.rm = TRUE)
+  opt_ind = max(which(valid_err == min(valid_err)))
+  opt_param = params[opt_ind, ]
+  opt_valid_err = min(valid_err)
+  
+  out = list()
+  out$opt_param = opt_param
+  out$opt_valid_err = opt_valid_err
+  out$opt_ind = opt_ind
+  out$valid_err = valid_err
+  
+  if (optModel) {
+    opt_model = smm.default(x = x, y = y, p, q, C = opt_param$cost, tau = opt_param$tau, ...)
+    out$opt_model = opt_model
+  }
+  return(out)
+}
