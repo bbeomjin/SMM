@@ -147,9 +147,9 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
     cat(nfolds, "- fold CV :", i / nfolds * 100, "%", "\r")
     fold = which(fold_list == i)
     y_fold = y[-fold]
-    x_fold = x[-fold, , drop = FALSE]
+    x_fold = X[-fold, , drop = FALSE]
     y_valid = y[fold]
-    x_valid = x[fold, , drop = FALSE]
+    x_valid = X[fold, , drop = FALSE]
     
     fold_err = mclapply(1:nrow(params),
                         function(j) {
@@ -174,7 +174,7 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
   out$valid_err = valid_err
   
   if (optModel) {
-    opt_model = smm.default(X = x, y = y, p, q, C = opt_param$cost, tau = opt_param$tau, ...)
+    opt_model = smm.default(X = X, y = y, p, q, C = opt_param$cost, tau = opt_param$tau, ...)
     out$opt_model = opt_model
   }
   return(out)
