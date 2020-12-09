@@ -141,7 +141,7 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
   params = expand.grid(cost = cost_range, tau = tau_range)
   
   fold_list = createFolds(y, k = nfolds, list = FALSE)
-  valid_err_mat = matrix(NA, nrow = nfolds, ncol = ncol(params))
+  valid_err_mat = matrix(NA, nrow = nfolds, ncol = nrow(params))
   
   for (i in 1:nfolds) {
     cat(nfolds, "- fold CV :", i / nfolds * 100, "%", "\r")
