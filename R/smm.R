@@ -153,10 +153,14 @@ kfold_cv = function(X, y, p, q, cost_range, tau_range, nfolds, optModel = TRUE, 
     
     fold_err = mclapply(1:nrow(params),
                         function(j) {
-                          smm_fit = smm.default(X = x_fold, y = y_fold, p, q, C = params$cost[j], tau = params$tau[j],
-                                                ...)
-                          pred_val = predict.smm(smm_fit, newdata = x_valid)
-                          err = 1 - sum(y_valid == pred_val) / length(y_valid)
+                          try_error = try((smm_fit = smm.default(X = x_fold, y = y_fold, p, q, C = params$cost[j], tau = params$tau[j],
+                                                ...)), silent = TRUE)
+                          if (inherits(try_error, "try-error")) {
+                            err = 1
+                          } else {
+                            pred_val = predict.smm(smm_fit, newdata = x_valid)
+                            err = 1 - sum(y_valid == pred_val) / length(y_valid)
+                          }
                           return(err)
                         }, mc.cores = ncores)
     
